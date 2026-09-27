@@ -13,13 +13,15 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
+
     html,
     body {
       margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #000;
+      background: transparent;
     }
 
     /* =========================================
@@ -29,7 +31,6 @@
     .mindar-ui-overlay,
     .mindar-ui-loading {
       background: rgba(0, 0, 0, 0.4) !important;
-
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
     }
@@ -45,7 +46,8 @@
     ========================================= */
 
     #start-btn {
-      position: fixed;
+
+      position: absolute;
 
       top: 50%;
       left: 50%;
@@ -64,19 +66,21 @@
         sans-serif;
 
       font-size: 18px;
-      font-weight: 600;
+      font-weight: bold;
 
-      color: #fff;
+      color: #ffffff;
 
       text-shadow:
         0 2px 4px rgba(0, 0, 0, 0.8);
 
-      background: rgba(0, 0, 0, 0.35);
+      background:
+        rgba(0, 0, 0, 0.35);
 
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
 
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border:
+        1px solid rgba(255, 255, 255, 0.3);
 
       border-radius: 30px;
 
@@ -86,18 +90,20 @@
         0 8px 32px rgba(0, 0, 0, 0.4);
 
       transition:
-        transform 0.3s ease,
-        background 0.3s ease;
+        all 0.3s ease;
 
       -webkit-tap-highlight-color: transparent;
     }
 
+
     #start-btn:active {
+
       transform:
         translate(-50%, -50%)
         scale(0.95);
 
-      background: rgba(0, 0, 0, 0.5);
+      background:
+        rgba(0, 0, 0, 0.5);
     }
 
 
@@ -106,9 +112,10 @@
     ========================================= */
 
     #link-btn {
+
       display: none;
 
-      position: fixed;
+      position: absolute;
 
       bottom: 35px;
       left: 50%;
@@ -136,7 +143,7 @@
 
       letter-spacing: 0.3px;
 
-      color: #fff;
+      color: #ffffff;
 
       text-decoration: none;
 
@@ -145,12 +152,14 @@
       text-shadow:
         0 2px 4px rgba(0, 0, 0, 0.8);
 
-      background: rgba(0, 0, 0, 0.35);
+      background:
+        rgba(0, 0, 0, 0.35);
 
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
 
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border:
+        1px solid rgba(255, 255, 255, 0.3);
 
       border-radius: 50px;
 
@@ -158,21 +167,29 @@
         0 8px 32px rgba(0, 0, 0, 0.4);
 
       transition:
-        transform 0.3s ease,
-        background 0.3s ease;
+        all 0.3s
+        cubic-bezier(0.25, 0.8, 0.25, 1);
 
       -webkit-tap-highlight-color: transparent;
     }
 
+
     #link-btn:active {
+
       transform:
         translateX(-50%)
         scale(0.95);
 
-      background: rgba(0, 0, 0, 0.5);
+      background:
+        rgba(0, 0, 0, 0.5);
+
+      border-color:
+        rgba(255, 255, 255, 0.5);
     }
 
+
     #link-btn svg {
+
       width: 18px;
       height: 18px;
 
@@ -193,13 +210,19 @@
 
 
     /* =========================================
-       AR
+       A-FRAME
     ========================================= */
 
     a-scene {
-      width: 100%;
-      height: 100%;
+      position: fixed !important;
+
+      top: 0;
+      left: 0;
+
+      width: 100% !important;
+      height: 100% !important;
     }
+
   </style>
 
 
@@ -207,24 +230,22 @@
 
     /*
     ==========================================================
-    НАСТРОЙКА ПРОПОРЦИЙ ФОТОГРАФИИ
+    ПРОПОРЦИЯ ФОТОГРАФИИ
     ==========================================================
 
-    Здесь задаётся пропорция изображения, которое сканируется.
+    Здесь указываем пропорцию фотографии,
+    которая используется как target.
 
     Например:
 
     1000 × 1300
-    => 1 : 1.3
+    ------------
+    1 : 1.3
 
-    1000 × 1500
-    => 1 : 1.5
+    Поэтому:
 
-    1200 × 800
-    => 1.5 : 1
-
-    1080 × 1920
-    => 0.5625 : 1
+    width  = 1
+    height = 1.3
 
     ==========================================================
     */
@@ -233,11 +254,17 @@
     const TARGET_HEIGHT = 1.3;
 
 
+    /*
+    ==========================================================
+    AR VIDEO HANDLER
+    ==========================================================
+    */
+
     AFRAME.registerComponent('ar-video-handler', {
 
       init: function () {
 
-        const target = this.el;
+        const el = this.el;
 
         const video =
           document.querySelector('#ar-video');
@@ -254,7 +281,7 @@
 
         /*
         ======================================================
-        УСТАНАВЛИВАЕМ РАЗМЕР ВИДЕО ПО РАЗМЕРУ ФОТО
+        Устанавливаем размер AR-плоскости
         ======================================================
         */
 
@@ -271,46 +298,41 @@
 
         /*
         ======================================================
-        СТАРТОВАЯ КНОПКА
+        START
         ======================================================
         */
 
         startBtn.addEventListener(
           'click',
-          async () => {
+          () => {
 
-            try {
+            video.play()
+              .then(() => {
 
-              /*
-              Разблокируем воспроизведение
-              после пользовательского клика.
-              */
+                video.pause();
 
-              await video.play();
+                startBtn.style.display =
+                  'none';
 
-              video.pause();
+                /*
+                Если нужна кнопка сайта:
 
-              startBtn.style.display = 'none';
+                linkBtn.style.display =
+                  'inline-flex';
+                */
 
-              /*
-              Кнопку сайта здесь можно включить,
-              если она понадобится.
-              */
+              })
+              .catch(error => {
 
-              // linkBtn.style.display = 'inline-flex';
+                console.error(
+                  'Ошибка разблокировки видео:',
+                  error
+                );
 
-            }
+                startBtn.style.display =
+                  'none';
 
-            catch (error) {
-
-              console.error(
-                'Ошибка разблокировки видео:',
-                error
-              );
-
-              startBtn.style.display = 'none';
-
-            }
+              });
 
           }
         );
@@ -318,41 +340,35 @@
 
         /*
         ======================================================
-        ФОТО НАЙДЕНО
+        TARGET FOUND
         ======================================================
         */
 
-        target.addEventListener(
+        el.addEventListener(
           'targetFound',
           () => {
 
             console.log(
-              'AR target найден'
+              'Target найден'
             );
 
 
-            /*
-            Включаем звук.
-            */
-
             video.muted = false;
 
-
-            /*
-            Запускаем видео.
-            */
 
             const playPromise =
               video.play();
 
 
-            if (playPromise !== undefined) {
+            if (
+              playPromise !== undefined
+            ) {
 
               playPromise.catch(
                 error => {
 
                   console.log(
-                    'Ошибка запуска видео:',
+                    'Play error:',
                     error
                   );
 
@@ -367,24 +383,17 @@
 
         /*
         ======================================================
-        ФОТО ПОТЕРЯНО
+        TARGET LOST
         ======================================================
         */
 
-        target.addEventListener(
+        el.addEventListener(
           'targetLost',
           () => {
 
             console.log(
-              'AR target потерян'
+              'Target потерян'
             );
-
-
-            /*
-            Останавливаем видео,
-            когда фотография исчезла
-            из камеры.
-            */
 
             video.pause();
 
@@ -404,7 +413,7 @@
 
 
   <!-- =========================================
-       КНОПКА СТАРТА
+       START BUTTON
   ========================================== -->
 
   <button id="start-btn">
@@ -413,13 +422,7 @@
 
 
   <!-- =========================================
-       КНОПКА САЙТА
-
-       Сейчас скрыта.
-
-       Если понадобится:
-       убери display:none
-       через JS после запуска.
+       LINK BUTTON
   ========================================== -->
 
   <a
@@ -432,23 +435,23 @@
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <path
-        d="M14 3h7v7"
-      />
+
+      <path d="M14 3h7v7"></path>
+
+      <path d="M10 14L21 3"></path>
 
       <path
-        d="M10 14L21 3"
-      />
+        d="
+          M21 14v5
+          a2 2 0 0 1-2 2
+          H5
+          a2 2 0 0 1-2-2
+          V5
+          a2 2 0 0 1 2-2
+          h5
+        "
+      ></path>
 
-      <path
-        d="M21 14v5
-           a2 2 0 0 1-2 2
-           H5
-           a2 2 0 0 1-2-2
-           V5
-           a2 2 0 0 1 2-2
-           h5"
-      />
     </svg>
 
     Открыть сайт
@@ -457,7 +460,8 @@
 
 
   <!-- =========================================
-       AR SCENE
+       MINDAR SCENE
+       ОСТАВЛЯЕМ КАК В ТВОЁМ РАБОЧЕМ ВАРИАНТЕ
   ========================================== -->
 
   <a-scene
@@ -481,13 +485,11 @@
       enabled: false
     "
 
-    embedded
-
   >
 
 
     <!-- =======================================
-         VIDEO ASSET
+         VIDEO
     ======================================== -->
 
     <a-assets>
@@ -500,7 +502,7 @@
 
         preload="auto"
 
-        loop
+        loop="true"
 
         crossorigin="anonymous"
 
@@ -546,11 +548,7 @@
 
 
       <!-- =====================================
-           ВИДЕО
-
-           Размер автоматически берётся
-           из TARGET_WIDTH / TARGET_HEIGHT
-           выше.
+           VIDEO PLANE
       ====================================== -->
 
       <a-video
@@ -559,9 +557,13 @@
 
         src="#ar-video"
 
-        position="0 0 0.01"
+        position="
+          0 0 0.01
+        "
 
-        rotation="0 0 0"
+        rotation="
+          0 0 0
+        "
 
         material="
           shader: flat;
