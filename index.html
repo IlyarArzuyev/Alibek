@@ -18,11 +18,15 @@
     body {
       margin: 0;
       padding: 0;
+
       width: 100%;
       height: 100%;
+
       overflow: hidden;
-      background: transparent;
+
+      background: #000;
     }
+
 
     /* =========================================
        MINDAR LOADING
@@ -30,14 +34,26 @@
 
     .mindar-ui-overlay,
     .mindar-ui-loading {
-      background: rgba(0, 0, 0, 0.4) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
+
+      background:
+        rgba(0, 0, 0, 0.4) !important;
+
+      backdrop-filter:
+        blur(20px) !important;
+
+      -webkit-backdrop-filter:
+        blur(20px) !important;
     }
 
+
     .mindar-ui-loading .loader {
-      border: 3px solid rgba(255, 255, 255, 0.2) !important;
-      border-top-color: #ffffff !important;
+
+      border:
+        3px solid
+        rgba(255, 255, 255, 0.2) !important;
+
+      border-top-color:
+        #ffffff !important;
     }
 
 
@@ -52,11 +68,13 @@
       top: 50%;
       left: 50%;
 
-      transform: translate(-50%, -50%);
+      transform:
+        translate(-50%, -50%);
 
       z-index: 99999;
 
-      padding: 16px 32px;
+      padding:
+        16px 32px;
 
       font-family:
         -apple-system,
@@ -66,33 +84,42 @@
         sans-serif;
 
       font-size: 18px;
+
       font-weight: bold;
 
       color: #ffffff;
 
       text-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.8);
+        0 2px 4px
+        rgba(0, 0, 0, 0.8);
 
       background:
         rgba(0, 0, 0, 0.35);
 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter:
+        blur(16px);
+
+      -webkit-backdrop-filter:
+        blur(16px);
 
       border:
-        1px solid rgba(255, 255, 255, 0.3);
+        1px solid
+        rgba(255, 255, 255, 0.3);
 
-      border-radius: 30px;
+      border-radius:
+        30px;
 
       cursor: pointer;
 
       box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4);
+        0 8px 32px
+        rgba(0, 0, 0, 0.4);
 
       transition:
         all 0.3s ease;
 
-      -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color:
+        transparent;
     }
 
 
@@ -120,7 +147,8 @@
       bottom: 35px;
       left: 50%;
 
-      transform: translateX(-50%);
+      transform:
+        translateX(-50%);
 
       z-index: 99999;
 
@@ -129,7 +157,8 @@
 
       gap: 10px;
 
-      padding: 14px 28px;
+      padding:
+        14px 28px;
 
       font-family:
         -apple-system,
@@ -139,6 +168,7 @@
         sans-serif;
 
       font-size: 15px;
+
       font-weight: 600;
 
       letter-spacing: 0.3px;
@@ -150,27 +180,40 @@
       white-space: nowrap;
 
       text-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.8);
+        0 2px 4px
+        rgba(0, 0, 0, 0.8);
 
       background:
         rgba(0, 0, 0, 0.35);
 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter:
+        blur(16px);
+
+      -webkit-backdrop-filter:
+        blur(16px);
 
       border:
-        1px solid rgba(255, 255, 255, 0.3);
+        1px solid
+        rgba(255, 255, 255, 0.3);
 
-      border-radius: 50px;
+      border-radius:
+        50px;
 
       box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4);
+        0 8px 32px
+        rgba(0, 0, 0, 0.4);
 
       transition:
         all 0.3s
-        cubic-bezier(0.25, 0.8, 0.25, 1);
+        cubic-bezier(
+          0.25,
+          0.8,
+          0.25,
+          1
+        );
 
-      -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color:
+        transparent;
     }
 
 
@@ -204,7 +247,8 @@
 
       filter:
         drop-shadow(
-          0 2px 3px rgba(0, 0, 0, 0.8)
+          0 2px 3px
+          rgba(0, 0, 0, 0.8)
         );
     }
 
@@ -214,6 +258,7 @@
     ========================================= */
 
     a-scene {
+
       position: fixed !important;
 
       top: 0;
@@ -230,28 +275,135 @@
 
     /*
     ==========================================================
-    ПРОПОРЦИЯ ФОТОГРАФИИ
+    АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ПРОПОРЦИИ ФОТО
     ==========================================================
 
-    Здесь указываем пропорцию фотографии,
-    которая используется как target.
+    В папке должна лежать:
+
+        target.jpg
+
+    Это оригинальная фотография,
+    которую ты использовал для создания targets.mind.
 
     Например:
 
-    1000 × 1300
-    ------------
-    1 : 1.3
+        target.jpg
+        1080 × 1920
 
-    Поэтому:
+    Скрипт автоматически получит:
 
-    width  = 1
-    height = 1.3
+        width  = 1080
+        height = 1920
+
+    И преобразует их в пропорцию:
+
+        0.5625 : 1
 
     ==========================================================
     */
 
-    const TARGET_WIDTH = 1;
-    const TARGET_HEIGHT = 1.3;
+
+    let targetWidth = 1;
+    let targetHeight = 1;
+
+
+    function loadTargetDimensions() {
+
+      return new Promise(
+        (resolve, reject) => {
+
+          const image =
+            new Image();
+
+
+          image.onload = function () {
+
+            const width =
+              image.naturalWidth;
+
+            const height =
+              image.naturalHeight;
+
+
+            console.log(
+              'Размер target:',
+              width,
+              '×',
+              height
+            );
+
+
+            if (
+              !width ||
+              !height
+            ) {
+
+              reject(
+                new Error(
+                  'Не удалось определить размер target.jpg'
+                )
+              );
+
+              return;
+            }
+
+
+            /*
+            ==========================================
+            Нормализуем размер.
+
+            Ширина всегда = 1.
+
+            Высота рассчитывается
+            относительно ширины.
+            ==========================================
+            */
+
+            targetWidth = 1;
+
+            targetHeight =
+              height / width;
+
+
+            console.log(
+              'AR пропорция:',
+              targetWidth,
+              ':',
+              targetHeight
+            );
+
+
+            resolve();
+
+          };
+
+
+          image.onerror =
+            function () {
+
+              reject(
+                new Error(
+                  'Не удалось загрузить target.jpg'
+                )
+              );
+
+            };
+
+
+          /*
+          Добавляем cache-buster,
+          чтобы браузер не использовал
+          старую фотографию.
+          */
+
+          image.src =
+            './target.jpg?v=' +
+            Date.now();
+
+        }
+      );
+
+    }
 
 
     /*
@@ -260,149 +412,215 @@
     ==========================================================
     */
 
-    AFRAME.registerComponent('ar-video-handler', {
+    AFRAME.registerComponent(
+      'ar-video-handler',
+      {
 
-      init: function () {
+        init: function () {
 
-        const el = this.el;
-
-        const video =
-          document.querySelector('#ar-video');
-
-        const videoPlane =
-          document.querySelector('#ar-video-plane');
-
-        const startBtn =
-          document.querySelector('#start-btn');
-
-        const linkBtn =
-          document.querySelector('#link-btn');
+          const target =
+            this.el;
 
 
-        /*
-        ======================================================
-        Устанавливаем размер AR-плоскости
-        ======================================================
-        */
-
-        videoPlane.setAttribute(
-          'width',
-          TARGET_WIDTH
-        );
-
-        videoPlane.setAttribute(
-          'height',
-          TARGET_HEIGHT
-        );
+          const video =
+            document.querySelector(
+              '#ar-video'
+            );
 
 
-        /*
-        ======================================================
-        START
-        ======================================================
-        */
+          const videoPlane =
+            document.querySelector(
+              '#ar-video-plane'
+            );
 
-        startBtn.addEventListener(
-          'click',
-          () => {
 
-            video.play()
-              .then(() => {
+          const startBtn =
+            document.querySelector(
+              '#start-btn'
+            );
 
-                video.pause();
 
-                startBtn.style.display =
-                  'none';
+          /*
+          ==============================================
+          Загружаем размеры фотографии
+          ==============================================
+          */
+
+          loadTargetDimensions()
+            .then(
+              function () {
 
                 /*
-                Если нужна кнопка сайта:
-
-                linkBtn.style.display =
-                  'inline-flex';
+                Устанавливаем размер
+                AR-плоскости.
                 */
 
-              })
-              .catch(error => {
+                videoPlane.setAttribute(
+                  'width',
+                  targetWidth
+                );
+
+
+                videoPlane.setAttribute(
+                  'height',
+                  targetHeight
+                );
+
+
+                console.log(
+                  'Размер AR-видео установлен:',
+                  targetWidth,
+                  '×',
+                  targetHeight
+                );
+
+              }
+            )
+            .catch(
+              function (error) {
 
                 console.error(
-                  'Ошибка разблокировки видео:',
                   error
                 );
 
-                startBtn.style.display =
-                  'none';
 
-              });
+                /*
+                Если target.jpg
+                не найден,
 
-          }
-        );
+                используем стандартный
+                формат 1:1.
+                */
 
+                videoPlane.setAttribute(
+                  'width',
+                  1
+                );
 
-        /*
-        ======================================================
-        TARGET FOUND
-        ======================================================
-        */
+                videoPlane.setAttribute(
+                  'height',
+                  1
+                );
 
-        el.addEventListener(
-          'targetFound',
-          () => {
-
-            console.log(
-              'Target найден'
+              }
             );
 
 
-            video.muted = false;
+          /*
+          ==============================================
+          КНОПКА СТАРТА
+          ==============================================
+          */
 
+          startBtn.addEventListener(
+            'click',
+            function () {
 
-            const playPromise =
-              video.play();
+              video.play()
+                .then(
+                  function () {
 
+                    video.pause();
 
-            if (
-              playPromise !== undefined
-            ) {
+                    startBtn.style.display =
+                      'none';
 
-              playPromise.catch(
-                error => {
+                  }
+                )
+                .catch(
+                  function (error) {
 
-                  console.log(
-                    'Play error:',
-                    error
-                  );
+                    console.error(
+                      'Ошибка разблокировки видео:',
+                      error
+                    );
 
-                }
-              );
+                    startBtn.style.display =
+                      'none';
+
+                  }
+                );
 
             }
-
-          }
-        );
+          );
 
 
-        /*
-        ======================================================
-        TARGET LOST
-        ======================================================
-        */
+          /*
+          ==============================================
+          TARGET FOUND
+          ==============================================
+          */
 
-        el.addEventListener(
-          'targetLost',
-          () => {
+          target.addEventListener(
+            'targetFound',
+            function () {
 
-            console.log(
-              'Target потерян'
-            );
+              console.log(
+                'TARGET FOUND'
+              );
 
-            video.pause();
 
-          }
-        );
+              /*
+              Включаем звук.
+              */
+
+              video.muted =
+                false;
+
+
+              /*
+              Запускаем видео.
+              */
+
+              const playPromise =
+                video.play();
+
+
+              if (
+                playPromise !== undefined
+              ) {
+
+                playPromise.catch(
+                  function (error) {
+
+                    console.log(
+                      'Play error:',
+                      error
+                    );
+
+                  }
+                );
+
+              }
+
+            }
+          );
+
+
+          /*
+          ==============================================
+          TARGET LOST
+          ==============================================
+          */
+
+          target.addEventListener(
+            'targetLost',
+            function () {
+
+              console.log(
+                'TARGET LOST'
+              );
+
+
+              video.pause();
+
+            }
+          );
+
+        }
 
       }
-
-    });
+    );
 
   </script>
 
@@ -413,7 +631,7 @@
 
 
   <!-- =========================================
-       START BUTTON
+       START
   ========================================== -->
 
   <button id="start-btn">
@@ -422,46 +640,7 @@
 
 
   <!-- =========================================
-       LINK BUTTON
-  ========================================== -->
-
-  <a
-    id="link-btn"
-    href="#"
-    target="_blank"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-
-      <path d="M14 3h7v7"></path>
-
-      <path d="M10 14L21 3"></path>
-
-      <path
-        d="
-          M21 14v5
-          a2 2 0 0 1-2 2
-          H5
-          a2 2 0 0 1-2-2
-          V5
-          a2 2 0 0 1 2-2
-          h5
-        "
-      ></path>
-
-    </svg>
-
-    Открыть сайт
-
-  </a>
-
-
-  <!-- =========================================
-       MINDAR SCENE
-       ОСТАВЛЯЕМ КАК В ТВОЁМ РАБОЧЕМ ВАРИАНТЕ
+       AR SCENE
   ========================================== -->
 
   <a-scene
@@ -548,7 +727,7 @@
 
 
       <!-- =====================================
-           VIDEO PLANE
+           VIDEO
       ====================================== -->
 
       <a-video
