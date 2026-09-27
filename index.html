@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
 
-  <title>AR Scanner</title>
+  <title></title>
 
   <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -12,24 +12,22 @@
   <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
+
   <style>
 
     html,
     body {
       margin: 0;
       padding: 0;
-
       width: 100%;
       height: 100%;
-
       overflow: hidden;
-
-      background: #000;
+      background: transparent;
     }
 
 
     /* =========================================
-       MINDAR LOADING
+       MINDAR UI
     ========================================= */
 
     .mindar-ui-overlay,
@@ -76,18 +74,14 @@
       padding:
         16px 32px;
 
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
+      font-size:
+        18px;
 
-      font-size: 18px;
+      font-weight:
+        bold;
 
-      font-weight: bold;
-
-      color: #ffffff;
+      color:
+        #ffffff;
 
       text-shadow:
         0 2px 4px
@@ -109,7 +103,8 @@
       border-radius:
         30px;
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
       box-shadow:
         0 8px 32px
@@ -133,141 +128,6 @@
         rgba(0, 0, 0, 0.5);
     }
 
-
-    /* =========================================
-       LINK BUTTON
-    ========================================= */
-
-    #link-btn {
-
-      display: none;
-
-      position: absolute;
-
-      bottom: 35px;
-      left: 50%;
-
-      transform:
-        translateX(-50%);
-
-      z-index: 99999;
-
-      align-items: center;
-      justify-content: center;
-
-      gap: 10px;
-
-      padding:
-        14px 28px;
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
-
-      font-size: 15px;
-
-      font-weight: 600;
-
-      letter-spacing: 0.3px;
-
-      color: #ffffff;
-
-      text-decoration: none;
-
-      white-space: nowrap;
-
-      text-shadow:
-        0 2px 4px
-        rgba(0, 0, 0, 0.8);
-
-      background:
-        rgba(0, 0, 0, 0.35);
-
-      backdrop-filter:
-        blur(16px);
-
-      -webkit-backdrop-filter:
-        blur(16px);
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.3);
-
-      border-radius:
-        50px;
-
-      box-shadow:
-        0 8px 32px
-        rgba(0, 0, 0, 0.4);
-
-      transition:
-        all 0.3s
-        cubic-bezier(
-          0.25,
-          0.8,
-          0.25,
-          1
-        );
-
-      -webkit-tap-highlight-color:
-        transparent;
-    }
-
-
-    #link-btn:active {
-
-      transform:
-        translateX(-50%)
-        scale(0.95);
-
-      background:
-        rgba(0, 0, 0, 0.5);
-
-      border-color:
-        rgba(255, 255, 255, 0.5);
-    }
-
-
-    #link-btn svg {
-
-      width: 18px;
-      height: 18px;
-
-      fill: none;
-
-      stroke: currentColor;
-
-      stroke-width: 2.2;
-
-      stroke-linecap: round;
-      stroke-linejoin: round;
-
-      filter:
-        drop-shadow(
-          0 2px 3px
-          rgba(0, 0, 0, 0.8)
-        );
-    }
-
-
-    /* =========================================
-       A-FRAME
-    ========================================= */
-
-    a-scene {
-
-      position: fixed !important;
-
-      top: 0;
-      left: 0;
-
-      width: 100% !important;
-      height: 100% !important;
-    }
-
   </style>
 
 
@@ -275,39 +135,15 @@
 
     /*
     ==========================================================
-    АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ПРОПОРЦИИ ФОТО
-    ==========================================================
-
-    В папке должна лежать:
-
-        target.jpg
-
-    Это оригинальная фотография,
-    которую ты использовал для создания targets.mind.
-
-    Например:
-
-        target.jpg
-        1080 × 1920
-
-    Скрипт автоматически получит:
-
-        width  = 1080
-        height = 1920
-
-    И преобразует их в пропорцию:
-
-        0.5625 : 1
-
+    ОПРЕДЕЛЯЕМ ПРОПОРЦИЮ TARGET
     ==========================================================
     */
-
 
     let targetWidth = 1;
     let targetHeight = 1;
 
 
-    function loadTargetDimensions() {
+    function getTargetRatio() {
 
       return new Promise(
         (resolve, reject) => {
@@ -325,14 +161,6 @@
               image.naturalHeight;
 
 
-            console.log(
-              'Размер target:',
-              width,
-              '×',
-              height
-            );
-
-
             if (
               !width ||
               !height
@@ -340,7 +168,7 @@
 
               reject(
                 new Error(
-                  'Не удалось определить размер target.jpg'
+                  'Не удалось получить размеры target.jpg'
                 )
               );
 
@@ -349,14 +177,19 @@
 
 
             /*
-            ==========================================
-            Нормализуем размер.
+            Всегда оставляем ширину = 1.
 
-            Ширина всегда = 1.
+            Например:
 
-            Высота рассчитывается
-            относительно ширины.
-            ==========================================
+            1080 × 1920
+
+            1920 / 1080
+            =
+            1.7777
+
+            Получаем:
+
+            1 × 1.7777
             */
 
             targetWidth = 1;
@@ -366,9 +199,17 @@
 
 
             console.log(
-              'AR пропорция:',
+              'TARGET:',
+              width,
+              '×',
+              height
+            );
+
+
+            console.log(
+              'AR:',
               targetWidth,
-              ':',
+              '×',
               targetHeight
             );
 
@@ -383,18 +224,12 @@
 
               reject(
                 new Error(
-                  'Не удалось загрузить target.jpg'
+                  'target.jpg не найден'
                 )
               );
 
             };
 
-
-          /*
-          Добавляем cache-buster,
-          чтобы браузер не использовал
-          старую фотографию.
-          */
 
           image.src =
             './target.jpg?v=' +
@@ -408,7 +243,7 @@
 
     /*
     ==========================================================
-    AR VIDEO HANDLER
+    AR COMPONENT
     ==========================================================
     */
 
@@ -418,7 +253,7 @@
 
         init: function () {
 
-          const target =
+          const el =
             this.el;
 
 
@@ -442,18 +277,13 @@
 
           /*
           ==============================================
-          Загружаем размеры фотографии
+          Получаем размер фотографии
           ==============================================
           */
 
-          loadTargetDimensions()
+          getTargetRatio()
             .then(
               function () {
-
-                /*
-                Устанавливаем размер
-                AR-плоскости.
-                */
 
                 videoPlane.setAttribute(
                   'width',
@@ -468,10 +298,7 @@
 
 
                 console.log(
-                  'Размер AR-видео установлен:',
-                  targetWidth,
-                  '×',
-                  targetHeight
+                  'Размер видео установлен'
                 );
 
               }
@@ -483,13 +310,8 @@
                   error
                 );
 
-
                 /*
-                Если target.jpg
-                не найден,
-
-                используем стандартный
-                формат 1:1.
+                Резервный вариант.
                 */
 
                 videoPlane.setAttribute(
@@ -508,7 +330,7 @@
 
           /*
           ==============================================
-          КНОПКА СТАРТА
+          ПЕРВЫЙ КЛИК
           ==============================================
           */
 
@@ -531,7 +353,6 @@
                   function (error) {
 
                     console.error(
-                      'Ошибка разблокировки видео:',
                       error
                     );
 
@@ -551,7 +372,7 @@
           ==============================================
           */
 
-          target.addEventListener(
+          el.addEventListener(
             'targetFound',
             function () {
 
@@ -560,17 +381,9 @@
               );
 
 
-              /*
-              Включаем звук.
-              */
-
               video.muted =
                 false;
 
-
-              /*
-              Запускаем видео.
-              */
 
               const playPromise =
                 video.play();
@@ -584,7 +397,7 @@
                   function (error) {
 
                     console.log(
-                      'Play error:',
+                      'Video play error:',
                       error
                     );
 
@@ -603,7 +416,7 @@
           ==============================================
           */
 
-          target.addEventListener(
+          el.addEventListener(
             'targetLost',
             function () {
 
@@ -640,7 +453,7 @@
 
 
   <!-- =========================================
-       AR SCENE
+       MINDAR
   ========================================== -->
 
   <a-scene
@@ -668,7 +481,7 @@
 
 
     <!-- =======================================
-         VIDEO
+         ASSETS
     ======================================== -->
 
     <a-assets>
@@ -725,7 +538,6 @@
 
     >
 
-
       <!-- =====================================
            VIDEO
       ====================================== -->
@@ -750,7 +562,6 @@
         "
 
       ></a-video>
-
 
     </a-entity>
 
